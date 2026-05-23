@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gran Rifa Scout Kudaw Carelmapu 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e3a2f, #2d5a4a);
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .dome {
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle at 50% 35%, #e0f2fe, #67e8f9, #22d3ee, #0891b2);
+      border-radius: 50%;
+      border: 14px solid #f8fafc;
+      box-shadow: 0 0 70px rgba(255,255,255,0.9), inset 0 30px 60px rgba(255,255,255,0.85), 0 30px 60px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+    .paper {
+      position: absolute;
+      width: 32px;
+      height: 42px;
+      background: linear-gradient(#fff, #f1f5f9);
+      border: 1px solid #1e2937;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 13px;
+      box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-white py-10">
+
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <h1 class="text-5xl font-bold text-yellow-300">Gran Rifa Scout</h1>
+      <h2 class="text-4xl font-bold mt-2">Kudaw Carelmapu 2026</h2>
+    </div>
+
+    <div class="text-center mb-10">
+      <button onclick="mostrarBases()" class="bg-green-700 hover:bg-green-600 px-8 py-4 rounded-full text-lg font-semibold inline-flex items-center gap-3 transition">
+        <i class="fa-solid fa-scroll"></i> Ver Bases del Sorteo
+      </button>
+    </div>
+
+    <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 mb-12 text-center">
+      <h3 class="text-2xl font-semibold mb-6">Cantidad de números en el sorteo</h3>
+      <input type="number" id="maxNumber" value="200" min="10" max="10000" 
+             class="w-80 text-center text-5xl font-bold bg-white text-gray-900 rounded-2xl py-6 focus:outline-none focus:ring-4 focus:ring-yellow-400">
+      <p class="text-green-200 mt-3">Números del 1 al valor ingresado</p>
+    </div>
+
+    <div class="flex justify-center">
+      <div>
+        <div id="dome" class="dome flex items-center justify-center"></div>
+        
+        <button onclick="iniciarSorteo()" id="startBtn"
+                class="mt-10 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-2xl px-16 py-6 rounded-full shadow-2xl transition flex items-center gap-4 mx-auto">
+          <i class="fa-solid fa-play"></i> COMENZAR SORTEO
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="bg-white text-gray-900 max-w-md w-full mx-4 rounded-3xl p-8">
+      <h2 class="text-2xl font-bold mb-5 text-center">Bases del Concurso</h2>
+      <p class="text-lg leading-relaxed text-center">
+        El sorteo se realizará <strong>SOLO con los números de las rifas vendidas al 23 de mayo del año 2026, a las 16:00</strong>.
+      </p>
+      <button onclick="cerrarModal()" class="mt-8 w-full bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl font-semibold text-lg">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let isDrawing = false;
+
+    function mostrarBases() {
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    function crearPapelitos(cantidad) {
+      const dome = document.getElementById('dome');
+      dome.innerHTML = "";
+      for (let i = 0; i < cantidad; i++) {
+        const papel = document.createElement('div');
+        papel.className = 'paper';
+        papel.style.left = Math.random() * 75 + 12 + '%';
+        papel.style.top = Math.random() * 55 + 25 + '%';
+        papel.style.transform = `rotate(${Math.random() * 90 - 45}deg)`;
+        papel.textContent = Math.floor(Math.random() * 999) + 1;
+        dome.appendChild(papel);
+
+        setTimeout(() => {
+          papel.style.transition = 'all 3.5s ease-in-out';
+          papel.style.left = Math.random() * 80 + 10 + '%';
+          papel.style.top = Math.random() * 65 + 15 + '%';
+          papel.style.transform = `rotate(${Math.random() * 400 - 200}deg)`;
+        }, Math.random() * 600);
+      }
+    }
+
+    function iniciarSorteo() {
+      if (isDrawing) return;
+      const max = parseInt(document.getElementById('maxNumber').value) || 200;
+      if (max < 10) return alert("Mínimo 10 números");
+
+      isDrawing = true;
+      const btn = document.getElementById('startBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Realizando sorteo...`;
+
+      crearPapelitos(50);
+
+      setTimeout(() => {
+        const ganador = Math.floor(Math.random() * max) + 1;
+        const dome = document.getElementById('dome');
+        dome.innerHTML = `
+          <div class="text-center">
+            <div class="text-[110px] font-black text-red-600 leading-none">${ganador}</div>
+            <div class="text-3xl font-bold text-green-900 mt-2">¡GANADOR!</div>
+          </div>
+        `;
+
+        setTimeout(() => {
+          isDrawing = false;
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-play"></i> COMENZAR SORTEO`;
+        }, 3500);
+      }, 3800);
+    }
+  </script>
+</body>
+</html>
