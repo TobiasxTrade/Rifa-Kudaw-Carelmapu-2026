@@ -37,6 +37,7 @@
       font-size: 13px;
       box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
       border-radius: 4px;
+      user-select: none;
     }
   </style>
 </head>
@@ -73,6 +74,7 @@
     </div>
   </div>
 
+  <!-- Modal Bases -->
   <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
     <div class="bg-white text-gray-900 max-w-md w-full mx-4 rounded-3xl p-8">
       <h2 class="text-2xl font-bold mb-5 text-center">Bases del Concurso</h2>
@@ -99,26 +101,33 @@
     function crearPapelitos(cantidad) {
       const dome = document.getElementById('dome');
       dome.innerHTML = "";
+
       for (let i = 0; i < cantidad; i++) {
         const papel = document.createElement('div');
         papel.className = 'paper';
-        papel.style.left = Math.random() * 75 + 12 + '%';
-        papel.style.top = Math.random() * 55 + 25 + '%';
-        papel.style.transform = `rotate(${Math.random() * 90 - 45}deg)`;
+        
+        // Posición inicial aleatoria
+        papel.style.left = Math.random() * 70 + 15 + '%';
+        papel.style.top = Math.random() * 60 + 20 + '%';
+        papel.style.transform = `rotate(${Math.random() * 80 - 40}deg)`;
         papel.textContent = Math.floor(Math.random() * 999) + 1;
+        
         dome.appendChild(papel);
 
+        // Animación tipo tornado (rápida y caótica)
         setTimeout(() => {
-          papel.style.transition = 'all 3.5s ease-in-out';
-          papel.style.left = Math.random() * 80 + 10 + '%';
-          papel.style.top = Math.random() * 65 + 15 + '%';
-          papel.style.transform = `rotate(${Math.random() * 400 - 200}deg)`;
-        }, Math.random() * 600);
+          const duration = 800 + Math.random() * 700; // entre 0.8s y 1.5s por movimiento
+          papel.style.transition = `all ${duration}ms cubic-bezier(0.4, 0.0, 0.2, 1)`;
+          papel.style.left = Math.random() * 75 + 12 + '%';
+          papel.style.top = Math.random() * 70 + 15 + '%';
+          papel.style.transform = `rotate(${Math.random() * 800 - 400}deg)`;
+        }, Math.random() * 300);
       }
     }
 
     function iniciarSorteo() {
       if (isDrawing) return;
+
       const max = parseInt(document.getElementById('maxNumber').value) || 200;
       if (max < 10) return alert("Mínimo 10 números");
 
@@ -127,24 +136,43 @@
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Realizando sorteo...`;
 
-      crearPapelitos(50);
+      const dome = document.getElementById('dome');
+      crearPapelitos(65);   // Más papeles para efecto tornado
 
+      // Duración total de la animación: 4 segundos
       setTimeout(() => {
         const ganador = Math.floor(Math.random() * max) + 1;
-        const dome = document.getElementById('dome');
+
         dome.innerHTML = `
           <div class="text-center">
-            <div class="text-[110px] font-black text-red-600 leading-none">${ganador}</div>
-            <div class="text-3xl font-bold text-green-900 mt-2">¡GANADOR!</div>
+            <div class="text-[120px] font-black text-red-600 leading-none drop-shadow-2xl">${ganador}</div>
+            <div class="text-3xl font-bold text-green-900 mt-1">¡GANADOR!</div>
           </div>
         `;
+
+        // Pequeño confeti al final
+        for (let i = 0; i < 30; i++) {
+          setTimeout(() => {
+            const c = document.createElement('div');
+            c.style.position = 'absolute';
+            c.style.fontSize = '28px';
+            c.style.left = Math.random() * 100 + '%';
+            c.textContent = ['🎉','🏕️','🌲'][Math.floor(Math.random()*3)];
+            dome.appendChild(c);
+            setTimeout(() => {
+              c.style.top = '350px';
+              c.style.opacity = '0';
+            }, 100);
+          }, i * 40);
+        }
 
         setTimeout(() => {
           isDrawing = false;
           btn.disabled = false;
           btn.innerHTML = `<i class="fa-solid fa-play"></i> COMENZAR SORTEO`;
-        }, 3500);
-      }, 3800);
+        }, 2500);
+
+      }, 4000); // ← 4 segundos exactos
     }
   </script>
 </body>
